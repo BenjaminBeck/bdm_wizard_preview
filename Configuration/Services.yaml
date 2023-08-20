@@ -1,0 +1,32 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  BDM\BdmWizardPreview\:
+    resource: '../Classes/*'
+
+#  BDM\BdmWizardPreview\Backend\BeforeFormEnginePageInitializedEvent:
+#    tags:
+#      - name: event.listener
+#        identifier: 'bdm-wizard-preview/backend/after-backend-controller-render'
+#        event: TYPO3\CMS\Backend\Controller\Event\SystemInformationToolbarCollectorEvent
+#  BDM\BdmWizardPreview\EventListener\ResolveJavaScriptImportEvent:
+#    tags:
+#      - name: event.listener
+#        identifier: 'bdm-wizard-preview/backend/resolve-javascript-import'
+#        event: TYPO3\CMS\Core\Page\Event\ResolveJavaScriptImportEvent
+#  BDM\BdmWizardPreview\XCLASS\NewContentElementController:
+#    calls:
+#      - setPreviewHelper: [ '@BDM\BdmWizardPreview\Helper\PreviewHelper' ]
+#    arguments:
+#      $uriBuilder: '@TYPO3\CMS\Backend\Routing\UriBuilder'
+#      $backendViewFactory: '@TYPO3\CMS\Backend\View\BackendViewFactory'
+#      $eventDispatcher: '@TYPO3\CMS\Core\EventDispatcher\EventDispatcher'
+#      $dependencyOrderingService: '@TYPO3\CMS\Core\Service\DependencyOrderingService'
+#      $previewHelper: '@BDM\BdmWizardPreview\Helper\PreviewHelper'
+
+  \TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController: '@BDM\BdmWizardPreview\XCLASS\NewContentElementController'
+
+
