@@ -1,0 +1,6 @@
+services:
+  BDM\BdmWizardPreview\Backend\BeforeFormEnginePageInitializedEvent:
+    tags:
+      - name: event.listener
+        identifier: 'bdm-wizard-preview/backend/after-backend-controller-render'
+        event: TYPO3\CMS\Backend\Controller\Event\SystemInformationToolbarCollectorEvent

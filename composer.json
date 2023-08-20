@@ -1,0 +1,21 @@
+{
+    "name": "bdm/bdm_wizard_preview",
+    "type": "typo3-cms-extension",
+    "description": "bdm_wizard_preview",
+    "homepage": "",
+    "license": ["GPL-2.0-or-later"],
+    "keywords": ["TYPO3 CMS"],
+    "require": {
+        "typo3/cms-core": ">=11.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "BDM\\BdmWizardPreview\\": "Classes/"
+        }
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "bdm_wizard_preview"
+        }
+    }
+}

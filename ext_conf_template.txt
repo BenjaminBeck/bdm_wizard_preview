@@ -1,0 +1,3 @@
+
+# cat=Settings; type=text; label=Pfad zum Bildverzeichnis
+previewImagePath = EXT:bdm_content_su/Resources/Public/Backend/Images/WizardPreview/
