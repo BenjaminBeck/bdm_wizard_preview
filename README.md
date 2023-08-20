@@ -31,8 +31,9 @@ ATM its only testet with TYPO3 11.5
    ![extension-settings.png](Documentation%2Fextension-settings.png)
 
 4. Adding Preview Images<br>
-   Place the preview images in the specified folder. Ensure filenames correspond with the CType. In TYPO3 development context, if images are absent, the wizard will guide you by displaying the required filename.
-    
+   <br>
+   Place the preview images in the specified folder. Ensure filenames correspond with the contents CType. In TYPO3 development context, if images are absent, the wizard will guide you by displaying the required filename. Additional variant images can be displayed by adding files ending with "-variant-" followed by a number. For example: If the de default preview image is "textmedia.png" the first variant image is "textmedia-variant-1.png".<br>
+    <br>
    ![extension-filename-help.png](Documentation%2Fextension-filename-help.png)
 
 
