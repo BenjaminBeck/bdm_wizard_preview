@@ -1,0 +1,2 @@
+# cat=basic/enable; type=boolean; label=Enable the wizard preview: After enable/disable this option, a complete backend reload is required.
+enabled = 1
