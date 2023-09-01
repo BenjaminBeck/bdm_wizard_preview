@@ -3,6 +3,7 @@
 namespace BDM\BdmWizardPreview\Backend;
 
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Core\Environment;
@@ -16,10 +17,26 @@ final class PreRender
         if (($GLOBALS['TYPO3_REQUEST'] ?? null) instanceof ServerRequestInterface
              && ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isBackend()
          ) {
-            $pageRenderer->loadRequireJsModule('TYPO3/CMS/BdmWizardPreview/Backend');
-            $extensionKey = 'bdm_wizard_preview';
-            $configuration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get($extensionKey);
-            $previewImagePath = $configuration['previewImagePath'];
+
+            if(isset($_GET['id'])){
+                $pageUid = $_GET['id'];
+                $pageTsConfig = BackendUtility::getPagesTSconfig($pageUid);
+                if(
+                    isset($pageTsConfig['bdm_wizard_preview.'])
+                    && isset($pageTsConfig['bdm_wizard_preview.']['previewImagePath'])
+                ){
+                    $previewImagePath = $pageTsConfig['bdm_wizard_preview.']['previewImagePath'];
+                }
+                if(empty($previewImagePath)){
+                    return;
+                }
+                $pageRenderer->loadRequireJsModule('TYPO3/CMS/BdmWizardPreview/Backend');
+                $extensionKey = 'bdm_wizard_preview';
+                $configuration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get($extensionKey);
+            }else{
+                $pageRenderer->addCssFile('EXT:bdm_wizard_preview/Resources/Public/Styles/backend-wizard.css');
+                return;
+            }
             $absoluteImagePath = GeneralUtility::getFileAbsFileName($previewImagePath);
             $allPreviewImages = GeneralUtility::getAllFilesAndFoldersInPath([], $absoluteImagePath, 'png', false, 2, '');
             $absoluteImagePath = \TYPO3\CMS\Core\Utility\PathUtility::getPublicResourceWebPath ($previewImagePath);

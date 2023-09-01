@@ -16,9 +16,11 @@ define(
 	'use strict';
 		let bdm_wizard_preview_extension_config = window.bdm_wizard_preview_extension_config;
 		const imageRootPath = bdm_wizard_preview_extension_config.previewImagePath;
-		let wizardItemSelector = '.t3-new-content-element-wizard-window .t3js-media-new-content-element-wizard [data-identifier]';
+		let wizardItemSelector = '.t3-new-content-element-wizard-window .t3js-media-new-content-element-wizard';
 		const allPreviewImagePathObjects = bdm_wizard_preview_extension_config.allPreviewImagePaths;
 		const isDevelepmentContext = bdm_wizard_preview_extension_config.isDevelepmentContext;
+
+
 		const allPreviewImageFilenamesArray = [];
 		$.each(allPreviewImagePathObjects, function (key, path){
 			const filename = path.split('/').pop();
@@ -35,8 +37,11 @@ define(
 		};
 
 		const checkInterval = setInterval(function () {
-			wizardItemSelector = wizardItemSelector + ':not(.modded)';
-			const $els = $('body').find(wizardItemSelector);
+			// wizardItemSelector = wizardItemSelector + ':not(.modded)';
+			const $els = $('body', window.parent.document).find(wizardItemSelector + ':not(.modded)');
+			// $('#parentPrice', window.parent.document).html();
+			//window.parent.document.querySelector('.t3-new-content-element-wizard-window .t3js-media-new-content-element-wizard');
+
 			if ($els.length) {
 				//clearInterval(checkInterval);
 				$.each($els, function (){
