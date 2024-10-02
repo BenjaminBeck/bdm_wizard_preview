@@ -3,10 +3,20 @@
 Extension that enhances the new content element wizard by displaying preview images. 
 
 ### Default TYPO3 Wizard
-![wizzard-before.png](Documentation/12_4/wizard-before.png)
+<kbd>
+   
+  ![wizzard-before.png](Documentation/12_4/wizard-before.png)
+   
+</kbd>
+
 
 ### Enhanced Wizard
-![wizzard-after.png](Documentation/12_4/wizard-after.png)
+<kbd>
+   
+  ![wizzard-after.png](Documentation/12_4/wizard-after.png)
+   
+</kbd>
+
 
 ### Compatibility
 Tested with TYPO3 12.4
