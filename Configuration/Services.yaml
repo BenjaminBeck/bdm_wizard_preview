@@ -7,6 +7,17 @@ services:
   BDM\BdmWizardPreview\:
     resource: '../Classes/*'
 
+
+  BDM\BdmWizardPreview\Service\BackendFrontendTypoScriptHackService: ~
+
+
+  # EXT:bdm_wizard_preview/Configuration/Services.yaml
+#  BDM\BdmWizardPreview\XCLASS\NewContentElementController:
+#    decorates: TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController
+#    arguments:
+#      - '@BDM\BdmWizardPreview\XCLASS\NewContentElementController.inner'
+
+
 #  BDM\BdmWizardPreview\Backend\BeforeFormEnginePageInitializedEvent:
 #    tags:
 #      - name: event.listener

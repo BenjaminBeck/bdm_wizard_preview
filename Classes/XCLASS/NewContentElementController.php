@@ -46,17 +46,17 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
 
     protected function wizardAction(ServerRequestInterface $request): ResponseInterface
     {
+	    if(!Configuration::isEnabled()){
+		    return parent::wizardAction($request);
+		}
+	    $pageUid = $this->pageInfo['uid'];
+
         if (!$this->id || $this->pageInfo === []) {
             // No pageId or no access.
             return new HtmlResponse('No Access');
         }
-        if(!Configuration::isEnabled()){
-            return parent::wizardAction($request);
-        }
-        $pageUid = $this->pageInfo['uid'];
-
-        // Whether position selection must be performed (no colPos was yet defined)
-        $positionSelection = $this->colPos === null;
+	    // Whether position selection must be performed (no colPos was yet defined)
+	    $positionSelection = $this->colPos === null;
 
         // Get processed and modified wizard items
         $wizardItems = $this->eventDispatcher->dispatch(
@@ -66,8 +66,10 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
                 $this->colPos,
                 $this->sys_language,
                 $this->uid_pid,
+	            $request
             )
         )->getWizardItems();
+
         $key = 'common';
         $categories = [];
         foreach ($wizardItems as $wizardKey => $wizardItem) {
@@ -80,65 +82,76 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
                     'items' => [],
                 ];
             } else {
+	            // Get default values for the wizard item
+	            $defaultValues = (array)($wizardItem['defaultValues'] ?? []);
+
                 // Initialize the view variables for the item
                 $item = [
                     'identifier' => $wizardKey,
                     'icon' => $wizardItem['iconIdentifier'] ?? '',
+                    'iconOverlay' => $wizardItem['iconOverlay'] ?? '',
                     'label' => $wizardItem['title'] ?? '',
                     'description' => $wizardItem['description'] ?? '',
+                    'defaultValues' => $defaultValues,
                 ];
                 // {"iconIdentifier":"content-header","title":"Nur \u00dcberschrift","description":"Eine \u00dcberschrift.","saveAndClose":false,"tt_content_defValues":{"CType":"header"}}
                 $item = $this->enrichtItemData($item, $wizardItem, $pageUid, $request);
-                // Get default values for the wizard item
-                $defVals = (array)($wizardItem['tt_content_defValues'] ?? []);
-                if (!$positionSelection) {
-                    // In case no position has to be selected, we can just add the target
-                    if (($wizardItem['saveAndClose'] ?? false)) {
-                        // Go to DataHandler directly instead of FormEngine
-                        $item['url'] = (string)$this->uriBuilder->buildUriFromRoute('tce_db', [
-                            'data' => [
-                                'tt_content' => [
-                                    StringUtility::getUniqueId('NEW') => array_replace($defVals, [
-                                        'colPos' => $this->colPos,
-                                        'pid' => $this->uid_pid,
-                                        'sys_language_uid' => $this->sys_language,
-                                    ]),
-                                ],
-                            ],
-                            'redirect' => $this->returnUrl,
-                        ]);
-                    } else {
-                        $item['url'] = (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
-                            'edit' => [
-                                'tt_content' => [
-                                    $this->uid_pid => 'new',
-                                ],
-                            ],
-                            'returnUrl' => $this->returnUrl,
-                            'defVals' => [
-                                'tt_content' => array_replace($defVals, [
-                                    'colPos' => $this->colPos,
-                                    'sys_language_uid' => $this->sys_language,
-                                ]),
-                            ],
-                        ]);
-                    }
-                } else {
-                    $item['url'] = (string)$this->uriBuilder
-                        ->buildUriFromRoute(
-                            'new_content_element_wizard',
-                            [
-                                'action' => 'positionMap',
-                                'id' => $this->id,
-                                'sys_language_uid' => $this->sys_language,
-                                'returnUrl' => $this->returnUrl,
-                            ]
-                        );
-                    $item['requestType'] = 'ajax';
-                    $item['defaultValues'] = $defVals;
-                    $item['saveAndClose'] = (bool)($wizardItem['saveAndClose'] ?? false);
-                }
-                $categories[$key]['items'][] = $item;
+
+	            // If the URL was already created (e.g. via the PSR-14 event) this needs to be
+	            // kept and not overwritten
+	            if (isset($wizardItem['url'])) {
+		            $item['url'] = $wizardItem['url'];
+		            if ($positionSelection) {
+			            $item['requestType'] = 'ajax';
+			            $item['saveAndClose'] = (bool)($wizardItem['saveAndClose'] ?? false);
+		            }
+	            } elseif ($positionSelection) {
+		            $item['url'] = (string)$this->uriBuilder
+			            ->buildUriFromRoute(
+				            'new_content_element_wizard',
+				            [
+					            'action' => 'positionMap',
+					            'id' => $this->id,
+					            'sys_language_uid' => $this->sys_language,
+					            'returnUrl' => $this->returnUrl,
+				            ]
+			            );
+		            $item['requestType'] = 'ajax';
+		            $item['saveAndClose'] = (bool)($wizardItem['saveAndClose'] ?? false);
+	            } else {
+		            // In case no position has to be selected, we can just add the target
+		            if (($wizardItem['saveAndClose'] ?? false)) {
+			            // Go to DataHandler directly instead of FormEngine
+			            $item['url'] = (string)$this->uriBuilder->buildUriFromRoute('tce_db', [
+				            'data' => [
+					            'tt_content' => [
+						            StringUtility::getUniqueId('NEW') => array_replace($defaultValues, [
+							            'colPos' => $this->colPos,
+							            'pid' => $this->uid_pid,
+							            'sys_language_uid' => $this->sys_language,
+						            ]),
+					            ],
+				            ],
+				            'redirect' => $this->returnUrl,
+			            ]);
+		            } else {
+			            $item['url'] = (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
+				            'edit' => [
+					            'tt_content' => [
+						            $this->uid_pid => 'new',
+					            ],
+				            ],
+				            'returnUrl' => $this->returnUrl,
+				            'defVals' => [
+					            'tt_content' => array_replace($defaultValues, [
+						            'colPos' => $this->colPos,
+						            'sys_language_uid' => $this->sys_language,
+					            ]),
+				            ],
+			            ]);
+		            }
+	            }
+	            $categories[$key]['items'][] = $item;
             }
         }
 

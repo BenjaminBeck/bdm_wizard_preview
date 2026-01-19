@@ -13,3 +13,9 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][NewContentElementController::class
     'className' => \BDM\BdmWizardPreview\XCLASS\NewContentElementController::class,
 ];
 
+// Load site configuration overrides
+$siteConfigurationOverride = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName('EXT:bdm_wizard_preview/Configuration/SiteConfiguration/Overrides/site.php');
+if (file_exists($siteConfigurationOverride)) {
+    require_once $siteConfigurationOverride;
+}
+

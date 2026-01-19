@@ -1,4 +1,3 @@
-
 // maybe?: https://stackoverflow.com/questions/50427513/html-paste-clipboard-image-to-file-input
 
 import {html, css, LitElement, nothing} from "lit";
@@ -11,7 +10,6 @@ import Viewport from "@typo3/backend/viewport.js";
 import RegularEvent from "@typo3/core/event/regular-event.js";
 import {SeverityEnum} from "@typo3/backend/enum/severity.js";
 import jQuery from"jquery";
-
 class Item {
 	constructor(identifier, label, description, icon, url, requestType, defaultValues, saveAndClose, ctype, images, filename) {
 		this.identifier = identifier;
@@ -92,11 +90,11 @@ class Categories {
 	}
 }
 
-
-import {NewContentElementWizard} from "@typo3/backend/new-content-element-wizard.js";
+// import {NewContentElementWizard} from "@typo3/backend/new-record-wizard.js";
+import {NewRecordWizard} from "@typo3/backend/new-record-wizard.js";
 import {NewContentElementWizardButton} from "@typo3/backend/new-content-element-wizard-button.js";
 
-let originalRenderWizard = NewContentElementWizard.prototype.renderWizard;
+let originalRenderWizard = NewRecordWizard.prototype.renderWizard;
 NewContentElementWizardButton.prototype.renderWizard = function() {
 	this.url && Modal.advanced({
 		content: this.url,
@@ -108,24 +106,37 @@ NewContentElementWizardButton.prototype.renderWizard = function() {
 	})
 }
 
-let originalElementProperties = NewContentElementWizard.elementProperties;
+let originalElementProperties = NewRecordWizard.elementProperties;
 let converter = {converter:{fromAttribute:(e)=>{const t=JSON.parse(e);return Categories.fromData(t)}}};
 originalElementProperties.set("categories",converter);
-
-let originalRender = NewContentElementWizard.prototype.render;
-NewContentElementWizard.prototype.render = function() {
+// let original_renderCategory = NewRecordWizard.prototype.renderCategory;
+// NewRecordWizard.prototype.renderCategory = function(e) {
+// 	debugger;
+// 	return original_renderCategory.call(this,e);
+// }
+let originalRender = NewRecordWizard.prototype.render;
+NewRecordWizard.prototype.render = function() {
 	return originalRender.call(this);
 };
 
-NewContentElementWizard.prototype._showDev = function() {
+NewRecordWizard.prototype._showDev = function() {
 	this._showDevHelper = !this._showDevHelper;
 	this.requestUpdate();
 }
 
-let originalRenderCategories = NewContentElementWizard.prototype.renderCategories;
-NewContentElementWizard.prototype.renderCategories = function() {
+
+const getConfig = () => {
+	const el = document.querySelector('[data-identifier="bdm_wizard_preview"]');
+	const configJson = el.dataset.config;
+	return JSON.parse(configJson);
+}
+
+
+let originalRenderCategories = NewRecordWizard.prototype.renderCategories;
+NewRecordWizard.prototype.renderCategories = function() {
 	let htmlResult = originalRenderCategories.call(this);
-	let bdm_wizard_preview_extension_config = window.bdm_wizard_preview_extension_config;
+	// let bdm_wizard_preview_extension_config = window.bdm_wizard_preview_extension_config;
+	let bdm_wizard_preview_extension_config = getConfig();
 	const imageRootPath = bdm_wizard_preview_extension_config.previewImagePath;
 	const isDevelepmentContext = bdm_wizard_preview_extension_config.isDevelepmentContext;
 	let devMarkup = '';
@@ -162,11 +173,13 @@ NewContentElementWizard.prototype.renderCategories = function() {
 	}
 	const styleMarkup = html`
 		<style>
+			
 			input.copy-filename, input.filepath {
 				background-color: yellow;
 				border: 2px solid red;
 				padding: 5px;
 				width: 100%;
+				color: black;;
 			}
 			input.filepath {
 				height: 2rem;
@@ -186,12 +199,24 @@ NewContentElementWizard.prototype.renderCategories = function() {
 			}
 			.elementwizard-categories .item {
 				background-color: #ececec;
+				
 			}
 			.elementwizard-categories .item:hover {
 				color: var(--typo3-component-hover-color);
 				background: var(--typo3-light-active-bg);
 				background: #3393eb33;
 				border-color: var(--typo3-light-active-bg);
+				.item-body-label, .item-body-description{
+					align-items: center;
+					display: flex;
+					/*color: var(--typo3-text-color-base) !important;*/
+					color: light-dark( 
+							var(--token-color-neutral-90),
+							var(--token-color-neutral-20)
+					) !important;
+					/*-webkit-filter: invert(100%);*/
+					/*filter: invert(100%); */
+				}
 			}
 			@container (min-width: 500px) {
 				.item-list.item-list {
@@ -214,9 +239,17 @@ NewContentElementWizard.prototype.renderCategories = function() {
 				height: auto;
 				border: 2px solid #c9c9c9;
 			}
-			.item-body-label{
+			.item-body-label, .item-body-description{
 				align-items: center;
 				display: flex;
+				/*color: var(--typo3-text-color-base) !important;*/
+				color: light-dark(
+						var(--token-color-neutral-90),
+						var(--token-color-neutral-90)
+				) !important;
+				
+				/*-webkit-filter: invert(100%);*/
+				/*filter: invert(100%);*/
 			}
 			.row-label {
 				gap: .5rem;
@@ -229,19 +262,22 @@ NewContentElementWizard.prototype.renderCategories = function() {
 		${ htmlResult }`;
 }
 
-let originalRenderCategoryButton = NewContentElementWizard.prototype.renderCategoryButton;
-NewContentElementWizard.prototype._handleInputClick = function(element) {
+let originalRenderCategoryButton = NewRecordWizard.prototype.renderCategoryButton;
+NewRecordWizard.prototype._handleInputClick = function(element) {
 	element.select();
 	document.execCommand('copy');
 }
-NewContentElementWizard.prototype.renderCategoryButton = function(e) {
-	let bdm_wizard_preview_extension_config = window.bdm_wizard_preview_extension_config;
+let originalRenderCategoryItem = NewRecordWizard.prototype.renderCategoryItem;
+NewRecordWizard.prototype.renderCategoryItem = function(e) {
+	// let bdm_wizard_preview_extension_config = window.bdm_wizard_preview_extension_config;
+	let bdm_wizard_preview_extension_config = getConfig();
 	const imageRootPath = bdm_wizard_preview_extension_config.previewImagePath;
 	const isDevelepmentContext = bdm_wizard_preview_extension_config.isDevelepmentContext;
 	let input = '';
 	if(this._showDevHelper && isDevelepmentContext) {
 		input = html`
 		<div>
+			
 			<input class="copy-filename" @click="${t => {t.preventDefault(), t.stopPropagation(),this._handleInputClick(t.target)}}" type="text" value="${e.filename}" />
 		</div>`;
 	}
@@ -270,7 +306,7 @@ NewContentElementWizard.prototype.renderCategoryButton = function(e) {
 					</div>
 					<div class="item-images">
 						${e.images.length ? e.images.map(imageData => html`
-							<img src="${imageData.fileUrl}" alt="${imageData}" class="preview-image img-fluid">
+							<img width="${imageData.imageWidth}" height="${imageData.imageHeight}" src="${imageData.fileUrl}" alt="${imageData}" class="preview-image img-fluid">
 						`) : nothing}
 					</div>
 				</div>
