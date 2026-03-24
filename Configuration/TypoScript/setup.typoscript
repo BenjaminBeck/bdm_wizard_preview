@@ -1,0 +1,2 @@
+module.tx_bdmwizardpreview.settings.previewFolder = {$module.tx_bdmwizardpreview.settings.previewFolder}
+#module.tx_bdmwizardpreview.settings.previewEnable = {$module.tx_bdmwizardpreview.settings.previewEnable}

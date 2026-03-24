@@ -1,0 +1,4 @@
+#cat=module.tx_bdmwizardpreview//a; type=string; label=Preview folder: Folder where the preview images are stored in
+module.tx_bdmwizardpreview.settings.previewFolder = EXT:bdm_wizard_preview/Resources/Public/Backend/PreviewWizard/
+#cat=module.tx_bdmwizardpreview//a; type=boolean; label=Enable preview: Enable the preview for the wizard
+#module.tx_bdmwizardpreview.settings.previewEnable = false
