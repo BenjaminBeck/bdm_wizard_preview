@@ -131,7 +131,40 @@ const getConfig = () => {
 		allPreviewImagePaths: [],
 		isDevelepmentContext: false
 	};
-	const el = document.querySelector('[data-identifier="bdm_wizard_preview"]');
+
+	const candidateDocuments = [document];
+	const addIframeDocuments = (rootDocument) => {
+		const iframes = rootDocument.querySelectorAll('iframe');
+		for (const iframe of iframes) {
+			try {
+				if (iframe.contentDocument) {
+					candidateDocuments.push(iframe.contentDocument);
+				}
+			} catch (error) {}
+		}
+	};
+	addIframeDocuments(document);
+	try {
+		if (window.parent && window.parent !== window && window.parent.document) {
+			candidateDocuments.push(window.parent.document);
+			addIframeDocuments(window.parent.document);
+		}
+	} catch (error) {}
+	try {
+		if (window.top && window.top !== window.parent && window.top.document) {
+			candidateDocuments.push(window.top.document);
+			addIframeDocuments(window.top.document);
+		}
+	} catch (error) {}
+
+	let el = null;
+	for (const candidateDocument of candidateDocuments) {
+		el = candidateDocument.querySelector('[data-identifier="bdm_wizard_preview"]');
+		if (el) {
+			break;
+		}
+	}
+
 	if (!el || !el.dataset || !el.dataset.config) {
 		return defaultConfig;
 	}
@@ -214,8 +247,9 @@ NewRecordWizard.prototype.renderCategories = function() {
 				width: 100%;
 			}
 			.elementwizard-categories .item {
-				background-color: #ececec;
-				
+				/*background-color: #ececec;*/
+				background-color: light-dark(var(--token-color-neutral-90), var(--token-color-neutral-20));
+				color: light-dark(var(--token-color-neutral-90), var(--token-color-neutral-20));
 			}
 			.elementwizard-categories .item:hover {
 				color: var(--typo3-component-hover-color);
