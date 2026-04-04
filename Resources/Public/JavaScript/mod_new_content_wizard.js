@@ -248,7 +248,7 @@ NewRecordWizard.prototype.renderCategories = function() {
 			}
 			.elementwizard-categories .item {
 				/*background-color: #ececec;*/
-				background-color: light-dark(var(--token-color-neutral-90), var(--token-color-neutral-20));
+				background-color: light-dark(var(--token-color-neutral-10), var(--token-color-neutral-20));
 				color: light-dark(var(--token-color-neutral-90), var(--token-color-neutral-20));
 			}
 			.elementwizard-categories .item:hover {
