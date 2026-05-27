@@ -6,8 +6,8 @@ $EM_CONF['bdm_wizard_preview'] = [
     'category' => '',
     'constraints' => [
         'depends' => [
-            'typo3' => '12.4.0-12.4.99',
-            'cms-backend' => '12.4.0-12.4.99'
+            'typo3' => '13.4.0-14.3.99',
+            'backend' => '13.4.0-14.3.99'
         ],
         'conflicts' => [
         ],
