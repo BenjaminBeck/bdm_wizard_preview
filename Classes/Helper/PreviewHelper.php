@@ -46,18 +46,20 @@ class PreviewHelper{
 //    $config = $ts->getConfigArray();
         $imagePath = Configuration::getTyposcriptPreviewPath($pageUid, $request,$tsp);
 
-        // Get preview image path from site configuration
-        // Example: In site configuration (Settings > Sites), add under "New Content Wizard" tab:
-        // bdmWizardPreviewImagePath: EXT:bdm_content_su/Resources/Public/Backend/Images/WizardPreview/
+        // Get preview image path from site configuration.
+        // Do not fall back to a project extension here: TYPO3 14 resolves EXT:
+        // paths through SystemResourceFactory and fails hard when the package is
+        // unknown. A stale fallback from another project would break the backend.
         $siteConfigPath = $this->getPreviewImagePathFromSiteConfig($pageUid);
         if (!empty($siteConfigPath)) {
             $imagePath = $siteConfigPath;
-        } else {
-            // Fallback to hardcoded path if not configured
-            $imagePath = "EXT:bdm_content_su/Resources/Public/Backend/Images/WizardPreview/";
         }
 
 	    $absoluteFilesystemImagePath = GeneralUtility::getFileAbsFileName($imagePath);
+        if ($absoluteFilesystemImagePath === '' || !is_dir($absoluteFilesystemImagePath)) {
+            return $result;
+        }
+
         $fileBaseName = $ctype . ($listType ? '_' . $listType : '');
         $fileName = $fileBaseName . '.png';
 //        $absoluteFilePath = GeneralUtility::getFileAbsFileName($imagePath . '/' . $fileName);

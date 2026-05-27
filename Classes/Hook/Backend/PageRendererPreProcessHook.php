@@ -52,17 +52,21 @@ class PageRendererPreProcessHook
 //	    }
 
 //	    $previewImagePath = "EXT:bdm_wizard_preview/Resources/Public/Images/wizard-preview-placeholder.png"
-	    // Get preview image path from site configuration
-	    // Example: In site configuration (Settings > Sites), add under "New Content Wizard" tab:
-	    // bdmWizardPreviewImagePath: EXT:bdm_content_su/Resources/Public/Backend/Images/WizardPreview/
+	    // Get preview image path from site configuration.
+	    // Do not fall back to a project extension here: TYPO3 14 resolves EXT:
+	    // paths through SystemResourceFactory and fails hard when the package is
+	    // unknown. A stale fallback from another project would break the backend.
 	    $previewImagePath = $this->getPreviewImagePathFromSiteConfig($pageUid);
 
-	    // Fallback to hardcoded path if not configured
 	    if (empty($previewImagePath)) {
-	        $previewImagePath = "EXT:bdm_content_su/Resources/Public/Backend/Images/WizardPreview/";
+	        return;
 	    }
 
 	    $absoluteFilesystemImagePath = GeneralUtility::getFileAbsFileName($previewImagePath);
+	    if ($absoluteFilesystemImagePath === '' || !is_dir($absoluteFilesystemImagePath)) {
+	        return;
+	    }
+
 	    $allPreviewImages = GeneralUtility::getAllFilesAndFoldersInPath([], $absoluteFilesystemImagePath, 'png', false, 2, '');
 	    $absoluteUrlImagePath = \TYPO3\CMS\Core\Utility\PathUtility::getPublicResourceWebPath ($previewImagePath);
 	    $hasAnyPreviewImages = !empty($allPreviewImages);

@@ -9,7 +9,7 @@ defined('TYPO3') or die();
 
 $GLOBALS['SiteConfiguration']['site']['columns']['bdmWizardPreviewImagePath'] = [
     'label' => 'Preview Image Path',
-    'description' => 'Path to the folder containing preview images for the new content wizard. Example: EXT:bdm_content_su/Resources/Public/Backend/Images/WizardPreview/',
+    'description' => 'Path to the folder containing preview images for the new content wizard. Example: EXT:bdm_content_bwv/Resources/Public/Backend/Images/WizardPreview/',
     'config' => [
         'type' => 'input',
         'size' => 50,
