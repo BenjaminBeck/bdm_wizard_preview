@@ -17,8 +17,10 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Controller\Event\ModifyNewContentElementWizardItemsEvent;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Backend\View\BackendLayoutView;
 use TYPO3\CMS\Backend\View\BackendViewFactory;
 use TYPO3\CMS\Core\Http\HtmlResponse;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Service\DependencyOrderingService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\StringUtility;
@@ -32,10 +34,19 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
         UriBuilder $uriBuilder,
         BackendViewFactory $backendViewFactory,
         EventDispatcherInterface $eventDispatcher,
-        DependencyOrderingService $dependencyOrderingService
+        DependencyOrderingService $dependencyOrderingService,
+        TcaSchemaFactory $tcaSchemaFactory,
+        BackendLayoutView $backendLayoutView
     ) {
         // Call the parent constructor to maintain the original behavior
-        parent::__construct($uriBuilder, $backendViewFactory, $eventDispatcher, $dependencyOrderingService);
+        parent::__construct(
+            $uriBuilder,
+            $backendViewFactory,
+            $eventDispatcher,
+            $dependencyOrderingService,
+            $tcaSchemaFactory,
+            $backendLayoutView
+        );
         $this->previewHelper = GeneralUtility::makeInstance(PreviewHelper::class);
     }
 
@@ -75,7 +86,7 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
         // Get processed and modified wizard items
         $wizardItems = $this->eventDispatcher->dispatch(
             new ModifyNewContentElementWizardItemsEvent(
-                $this->getWizards(),
+                $this->getWizards($request),
                 $this->pageInfo,
                 $this->colPos,
                 $this->sys_language,
