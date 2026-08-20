@@ -126,16 +126,32 @@ NewRecordWizard.prototype._showDev = function() {
 
 
 const getConfig = () => {
+	const defaultConfig = {
+		previewImagePath: '',
+		allPreviewImagePaths: [],
+		isDevelepmentContext: false
+	};
 	const el = document.querySelector('[data-identifier="bdm_wizard_preview"]');
-	const configJson = el.dataset.config;
-	return JSON.parse(configJson);
+	if (!el || !el.dataset || !el.dataset.config) {
+		return defaultConfig;
+	}
+	try {
+		const configJson = el.dataset.config;
+		const parsed = JSON.parse(configJson);
+		return {
+			...defaultConfig,
+			...parsed
+		};
+	} catch (error) {
+		console.warn('bdm_wizard_preview: invalid config payload, fallback to defaults', error);
+		return defaultConfig;
+	}
 }
 
 
 let originalRenderCategories = NewRecordWizard.prototype.renderCategories;
 NewRecordWizard.prototype.renderCategories = function() {
 	let htmlResult = originalRenderCategories.call(this);
-	// let bdm_wizard_preview_extension_config = window.bdm_wizard_preview_extension_config;
 	let bdm_wizard_preview_extension_config = getConfig();
 	const imageRootPath = bdm_wizard_preview_extension_config.previewImagePath;
 	const isDevelepmentContext = bdm_wizard_preview_extension_config.isDevelepmentContext;
@@ -269,16 +285,16 @@ NewRecordWizard.prototype._handleInputClick = function(element) {
 }
 let originalRenderCategoryItem = NewRecordWizard.prototype.renderCategoryItem;
 NewRecordWizard.prototype.renderCategoryItem = function(e) {
-	// let bdm_wizard_preview_extension_config = window.bdm_wizard_preview_extension_config;
 	let bdm_wizard_preview_extension_config = getConfig();
-	const imageRootPath = bdm_wizard_preview_extension_config.previewImagePath;
 	const isDevelepmentContext = bdm_wizard_preview_extension_config.isDevelepmentContext;
+	const images = Array.isArray(e.images) ? e.images : [];
+	const filename = e.filename ?? '';
 	let input = '';
 	if(this._showDevHelper && isDevelepmentContext) {
 		input = html`
 		<div>
 			
-			<input class="copy-filename" @click="${t => {t.preventDefault(), t.stopPropagation(),this._handleInputClick(t.target)}}" type="text" value="${e.filename}" />
+			<input class="copy-filename" @click="${t => {t.preventDefault(), t.stopPropagation(),this._handleInputClick(t.target)}}" type="text" value="${filename}" />
 		</div>`;
 	}
 	return html`${e.visible ? html`
@@ -305,7 +321,7 @@ NewRecordWizard.prototype.renderCategoryItem = function(e) {
 						</div>
 					</div>
 					<div class="item-images">
-						${e.images.length ? e.images.map(imageData => html`
+						${images.length ? images.map(imageData => html`
 							<img width="${imageData.imageWidth}" height="${imageData.imageHeight}" src="${imageData.fileUrl}" alt="${imageData}" class="preview-image img-fluid">
 						`) : nothing}
 					</div>
@@ -314,4 +330,3 @@ NewRecordWizard.prototype.renderCategoryItem = function(e) {
 		</div>
 		` : nothing}`
 }
-

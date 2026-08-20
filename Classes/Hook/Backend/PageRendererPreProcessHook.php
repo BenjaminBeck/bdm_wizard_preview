@@ -33,11 +33,15 @@ class PageRendererPreProcessHook
         $pageRenderer->getJavaScriptRenderer()->addJavaScriptModuleInstruction(
             JavaScriptModuleInstruction::create('@bdm/bdm_wizard_preview/mod_new_content_wizard.js')
         );
+        $pageRenderer->addCssFile('EXT:bdm_wizard_preview/Resources/Public/Styles/backend-wizard.css');
         $applicationContext = Environment::getContext();
         $isDevelepmentContext = $applicationContext->isDevelopment();
 
-
+		$hasId = isset($_GET['id']);
+		if(!$hasId){
+			return;		}
 	    $pageUid = (int)$_GET['id'];
+
 	    $pageTsConfig = BackendUtility::getPagesTSconfig($pageUid);
 	    $previewImagePath = $pageTsConfig['bdm_wizard_preview.']['previewImagePath'] ?? '';
 	    $hasPreviewImagePathFromPageTs = !empty($previewImagePath);
@@ -86,7 +90,6 @@ class PageRendererPreProcessHook
 //            'alert("hi"); debugger;var bdm_wizard_preview_extension_config = ' . json_encode($configuration) . ';'
 //        );
 		$pageRenderer->addBodyContent("<div data-identifier='bdm_wizard_preview' data-config='".json_encode($configuration)."'></div>");
-        $pageRenderer->addCssFile('EXT:bdm_wizard_preview/Resources/Public/Styles/backend-wizard.css');
     }
 
     /**

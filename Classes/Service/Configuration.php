@@ -44,6 +44,10 @@ class Configuration
         if(count($setupArray) === 0){
             return "";
         }
+		$configExists = isset($setupArray["module."]["tx_bdmwizardpreview."]["settings."]);
+		if(!$configExists){
+			return "";
+		}
 		$path = $setupArray["module."]["tx_bdmwizardpreview."]["settings."]["previewFolder"];
 //        $path = $setupArray["previewFolder"];
         $path = trim($path, '/');
