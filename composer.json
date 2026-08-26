@@ -1,6 +1,5 @@
 {
     "name": "bdm/bdm_wizard_preview",
-    "version": "14.3.x-dev",
     "type": "typo3-cms-extension",
     "description": "bdm_wizard_preview",
     "keywords": ["TYPO3 CMS"],

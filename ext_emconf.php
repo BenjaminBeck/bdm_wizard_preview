@@ -20,5 +20,5 @@ $EM_CONF['bdm_wizard_preview'] = [
     'state' => 'stable',
     'author' => 'Benjamin Beck',
     'author_email' => 'beck@beck-digitale-medien.de',
-    'version' => '1.0.0',
+    'version' => '14.3.1',
 ];
